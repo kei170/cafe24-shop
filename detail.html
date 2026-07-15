@@ -161,177 +161,226 @@
             <p class="{$naver_mileage_exception_display|display}"><img src="//img.echosting.cafe24.com/skin/base_ko_KR/product/txt_naver.gif" alt="개인결제창을 통한 결제 시 네이버 마일리지 적립 및 사용이 가능합니다." /></p>
 
             
-<!-- ===== 골라담기 UI 시작 ===== -->
+<!-- ===================================================================
+     [구현] 골라담기 커스텀 옵션 UI
+     - 기존 카페24 기본 select 옵션을 카드형 UI로 교체
+     - 기존 옵션 테이블은 CSS로 숨기고, 카드 클릭 시 JS로 옵션 동기화
+     - 반응형: 모바일 2열 / PC(768px 이상) 4열
+     =================================================================== -->
 <style>
-/* 기존 카페24 옵션 테이블 숨김 */
-table[module="product_option"] {
-    display: none !important;
-}
-
-/* 골라담기 래퍼 */
-.golladamgi-wrap {
-    width: 100%;
-    margin: 16px 0 20px;
-    font-family: 'Noto Sans KR', Apple SD Gothic Neo, sans-serif;
-}
-
-.golladamgi-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.golladamgi-label em {
-    font-style: normal;
-    font-size: 11px;
-    color: #ff5a2d;
-    background: #fff3f0;
-    border: 1px solid #ffcbbf;
-    border-radius: 3px;
-    padding: 1px 6px;
-    font-weight: 600;
-}
-
-/* 카드 그리드 - 모바일 2열 기본 */
-.golladamgi-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-}
-
-/* 카드 */
-.golladamgi-card {
-    position: relative;
-    border: 1.5px solid #ddd;
-    border-radius: 10px;
-    padding: 14px 12px;
-    cursor: pointer;
-    background: #fff;
-    transition: border-color 0.15s, background 0.15s;
-    text-align: left;
-    width: 100%;
-    box-sizing: border-box;
-    outline: none;
-}
-
-.golladamgi-card:hover {
-    border-color: #ff5a2d;
-    background: #fffaf9;
-}
-
-.golladamgi-card.is-selected {
-    border-color: #ff5a2d;
-    background: #fff8f6;
-    box-shadow: 0 0 0 1px #ff5a2d;
-}
-
-/* 체크 마크 */
-.golladamgi-card .card-check {
-    display: none;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 20px;
-    height: 20px;
-    background: #ff5a2d;
-    border-radius: 50%;
-    color: #fff;
-    font-size: 11px;
-    line-height: 20px;
-    text-align: center;
-}
-
-.golladamgi-card.is-selected .card-check {
-    display: block;
-}
-
-/* 뱃지 */
-.card-badge {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 3px;
-    margin-bottom: 6px;
-    letter-spacing: 0.2px;
-}
-
-.card-badge.best { background: #ff5a2d; color: #fff; }
-.card-badge.max  { background: #222; color: #fff; }
-
-/* 카드 텍스트 */
-.card-qty {
-    display: block;
-    font-size: 14px;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 5px;
-}
-
-.card-origin {
-    display: block;
-    font-size: 11px;
-    color: #aaa;
-    text-decoration: line-through;
-    margin-bottom: 3px;
-}
-
-.card-price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
-    margin-bottom: 3px;
-}
-
-.card-pct {
-    font-size: 13px;
-    font-weight: 800;
-    color: #ff5a2d;
-}
-
-.card-price {
-    font-size: 13px;
-    font-weight: 700;
-    color: #222;
-}
-
-.card-unit {
-    display: block;
-    font-size: 11px;
-    color: #999;
-    margin-top: 2px;
-}
-
-/* PC 4열 */
-@media (min-width: 768px) {
-    .golladamgi-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
+    /*
+     * [구현 - CSS ①]
+     * 기존 카페24 옵션 테이블 숨김 처리
+     * - table[module="product_option"] : 카페24 기본 옵션 선택 영역
+     * - 제거하지 않고 숨김 처리하여 내부 select와의 JS 동기화 유지
+     */
+    table[module="product_option"] {
+        display: none !important;
     }
-    .golladamgi-card { padding: 16px 14px; }
-    .card-qty { font-size: 15px; }
-    .card-price { font-size: 14px; }
-    .card-pct { font-size: 14px; }
-}
 
-/* 좁은 화면 대응 */
-@media (max-width: 360px) {
-    .card-qty { font-size: 12px; }
-    .card-price { font-size: 11px; }
-    .card-pct { font-size: 11px; }
-    .golladamgi-card { padding: 10px 8px; }
-}
+    /* [구현 - CSS ②] 골라담기 전체 래퍼 */
+    .golladamgi-wrap {
+        width: 100%;
+        margin: 16px 0 20px;
+        font-family: 'Noto Sans KR', Apple SD Gothic Neo, sans-serif;
+    }
+
+    /* [구현 - CSS ③] 상단 라벨 ("수량 선택 · 많을수록 저렴") */
+    .golladamgi-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* 라벨 내 뱃지 스타일 */
+    .golladamgi-label em {
+        font-style: normal;
+        font-size: 11px;
+        color: #ff5a2d;
+        background: #fff3f0;
+        border: 1px solid #ffcbbf;
+        border-radius: 3px;
+        padding: 1px 6px;
+        font-weight: 600;
+    }
+
+    /*
+     * [구현 - CSS ④] 카드 그리드 레이아웃
+     * - 기본(모바일): 2열
+     * - PC(768px 이상): 4열 (하단 @media 참고)
+     */
+    .golladamgi-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    /*
+     * [구현 - CSS ⑤] 개별 옵션 카드
+     * - button 태그 사용: 터치 영역 확보 및 접근성 대응
+     * - data-option-value 속성으로 카페24 옵션 인덱스 매핑
+     */
+    .golladamgi-card {
+        position: relative;
+        border: 1.5px solid #ddd;
+        border-radius: 10px;
+        padding: 14px 12px;
+        cursor: pointer;
+        background: #fff;
+        transition: border-color 0.15s, background 0.15s;
+        text-align: left;
+        width: 100%;
+        box-sizing: border-box;
+        outline: none;
+    }
+
+    /* 호버 상태 */
+    .golladamgi-card:hover {
+        border-color: #ff5a2d;
+        background: #fffaf9;
+    }
+
+    /*
+     * [구현 - CSS ⑥] 선택된 카드 상태
+     * - JS에서 .is-selected 클래스 추가/제거로 제어
+     */
+    .golladamgi-card.is-selected {
+        border-color: #ff5a2d;
+        background: #fff8f6;
+        box-shadow: 0 0 0 1px #ff5a2d; /* 이중 테두리 효과 */
+    }
+
+    /*
+     * [구현 - CSS ⑦] 선택 체크 마크 (✓)
+     * - 기본: 숨김 / 선택 시 표시
+     * - 카드 우측 상단 절대 위치
+     */
+    .golladamgi-card .card-check {
+        display: none;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 20px;
+        height: 20px;
+        background: #ff5a2d;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 11px;
+        line-height: 20px;
+        text-align: center;
+    }
+
+    .golladamgi-card.is-selected .card-check {
+        display: block; /* 선택 시 체크 표시 */
+    }
+
+    /*
+     * [구현 - CSS ⑧] 카드 내 뱃지
+     * - .best : "가장 많이 사요" (오렌지)
+     * - .max  : "최대할인" (블랙)
+     */
+    .card-badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 3px;
+        margin-bottom: 6px;
+        letter-spacing: 0.2px;
+    }
+
+    .card-badge.best { background: #ff5a2d; color: #fff; }
+    .card-badge.max  { background: #222; color: #fff; }
+
+    /* [구현 - CSS ⑨] 카드 내 텍스트 요소들 */
+    .card-qty {        /* 수량 (10개입, 30개입 등) */
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 5px;
+    }
+
+    .card-origin {     /* 원가 (취소선) */
+        display: block;
+        font-size: 11px;
+        color: #aaa;
+        text-decoration: line-through;
+        margin-bottom: 3px;
+    }
+
+    .card-price-row {  /* 할인율 + 할인가 행 */
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        margin-bottom: 3px;
+    }
+
+    .card-pct {        /* 할인율 (25%, 29% 등) */
+        font-size: 13px;
+        font-weight: 800;
+        color: #ff5a2d;
+    }
+
+    .card-price {      /* 할인 판매가 */
+        font-size: 13px;
+        font-weight: 700;
+        color: #222;
+    }
+
+    .card-unit {       /* 개당 가격 */
+        display: block;
+        font-size: 11px;
+        color: #999;
+        margin-top: 2px;
+    }
+
+    /*
+     * [구현 - CSS ⑩] 반응형 - PC 4열 레이아웃
+     * - 768px 이상: 4열로 전환
+     */
+    @media (min-width: 768px) {
+        .golladamgi-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .golladamgi-card { padding: 16px 14px; }
+        .card-qty { font-size: 15px; }
+        .card-price { font-size: 14px; }
+        .card-pct { font-size: 14px; }
+    }
+
+    /*
+     * [구현 - CSS ⑪] 반응형 - 극소형 화면 대응 (360px 이하)
+     * - 텍스트 깨짐 방지
+     */
+    @media (max-width: 360px) {
+        .card-qty { font-size: 12px; }
+        .card-price { font-size: 11px; }
+        .card-pct { font-size: 11px; }
+        .golladamgi-card { padding: 10px 8px; }
+    }
 </style>
 
+<!--
+    [구현 - HTML]
+    골라담기 카드 UI 마크업
+    - .golladamgi-wrap : 전체 래퍼
+    - .golladamgi-grid : 카드 그리드 컨테이너
+    - .golladamgi-card : 옵션 카드 (button 태그)
+      - data-option-value : 카페24 옵션 select의 selectedIndex와 매핑 (1부터 시작)
+      - onclick="golladamgiSelect(this)" : 카드 선택 이벤트
+-->
 <div class="golladamgi-wrap">
     <p class="golladamgi-label">수량 선택 <em>많을수록 저렴</em></p>
 
     <div class="golladamgi-grid" id="golladamgiGrid">
 
+        <!-- 옵션 카드 1: 10개입 / data-option-value="1" → select의 1번째 옵션 -->
         <button type="button" class="golladamgi-card" data-option-value="1" onclick="golladamgiSelect(this)">
             <span class="card-check">✓</span>
             <span class="card-qty">10개입</span>
@@ -343,6 +392,7 @@ table[module="product_option"] {
             <span class="card-unit">개당 2,470원</span>
         </button>
 
+        <!-- 옵션 카드 2: 30개입 / 베스트 뱃지 포함 -->
         <button type="button" class="golladamgi-card" data-option-value="2" onclick="golladamgiSelect(this)">
             <span class="card-check">✓</span>
             <span class="card-badge best">가장 많이 사요</span>
@@ -355,6 +405,7 @@ table[module="product_option"] {
             <span class="card-unit">개당 2,350원</span>
         </button>
 
+        <!-- 옵션 카드 3: 50개입 -->
         <button type="button" class="golladamgi-card" data-option-value="3" onclick="golladamgiSelect(this)">
             <span class="card-check">✓</span>
             <span class="card-qty">50개입</span>
@@ -366,6 +417,7 @@ table[module="product_option"] {
             <span class="card-unit">개당 2,230원</span>
         </button>
 
+        <!-- 옵션 카드 4: 100개입 / 최대할인 뱃지 포함 -->
         <button type="button" class="golladamgi-card" data-option-value="4" onclick="golladamgiSelect(this)">
             <span class="card-check">✓</span>
             <span class="card-badge max">최대할인</span>
@@ -382,37 +434,52 @@ table[module="product_option"] {
 </div>
 
 <script>
+/*
+ * [구현 - JS] golladamgiSelect(el)
+ * 골라담기 카드 클릭 시 실행되는 함수
+ *
+ * 동작 순서:
+ * 1. 모든 카드의 .is-selected 클래스 제거 (선택 초기화)
+ * 2. 클릭한 카드에 .is-selected 클래스 추가 (선택 상태 표시)
+ * 3. 숨겨진 카페24 기본 select 옵션 값 변경 (옵션 동기화)
+ *    - EC_SDE_setOptionSelect() : 카페24 공식 옵션 변경 함수
+ *    - change 이벤트 강제 발생 : 가격/재고 업데이트 트리거
+ */
 function golladamgiSelect(el) {
-    // 1. 모든 카드 선택 해제
+    /* Step 1. 모든 카드 선택 상태 초기화 */
     document.querySelectorAll('.golladamgi-card').forEach(function(c) {
         c.classList.remove('is-selected');
     });
 
-    // 2. 클릭한 카드 선택
+    /* Step 2. 클릭한 카드 선택 상태 활성화 */
     el.classList.add('is-selected');
 
-    // 3. 카페24 옵션 select 찾아서 값 변경
-    var optionValue = el.getAttribute('data-option-value');
+    /* Step 3. 카페24 기본 옵션 select와 동기화 */
+    var optionValue = el.getAttribute('data-option-value'); // 카드의 옵션 인덱스
+    // 카페24 옵션 select 요소 탐색 (name="option1" 또는 id에 product_option 포함)
     var selects = document.querySelectorAll('select[name="option1"], select[id*="product_option"]');
-    
+
     if (selects.length > 0) {
         var sel = selects[0];
-        // 옵션 인덱스로 선택 (0번째=선택하세요, 1번째부터 실제 옵션)
+
+        // selectedIndex 설정 (0 = "선택하세요", 1부터 실제 옵션)
         sel.selectedIndex = parseInt(optionValue);
-        
-        // 카페24 옵션 변경 이벤트 발생
+
+        // 카페24 공식 옵션 변경 함수 호출 (존재할 경우)
         if (typeof EC_SDE_setOptionSelect === 'function') {
             EC_SDE_setOptionSelect(0, sel.selectedIndex);
         }
-        
-        // change 이벤트 강제 발생
+
+        // change 이벤트 강제 발생 → 카페24 가격/재고 업데이트 트리거
         var evt = document.createEvent('Event');
         evt.initEvent('change', true, true);
         sel.dispatchEvent(evt);
     }
 }
 </script>
-<!-- ===== 골라담기 UI 끝 ===== -->
+<!-- ===================================================================
+     [구현 종료] 골라담기 커스텀 옵션 UI
+     =================================================================== -->
 
 <table border="1" summary="" module="product_option">
                 <!--

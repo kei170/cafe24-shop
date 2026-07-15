@@ -165,177 +165,173 @@
         position: absolute !important;
     }
 
-    /* [구현 - CSS ②] 골라담기 전체 래퍼 */
+    /* [구현 - CSS ②] 골라담기 전체 래퍼 - 한끼통살 스타일 */
     .golladamgi-wrap {
         width: 100%;
         margin: 16px 0 20px;
         font-family: 'Noto Sans KR', Apple SD Gothic Neo, sans-serif;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        overflow: hidden;
     }
 
-    /* [구현 - CSS ③] 상단 라벨 ("옵션 선택 (필수)") */
-    .golladamgi-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: #222;
-        margin-bottom: 10px;
+    /* [구현 - CSS ③] 헤더 ("옵션 선택 (필수)") - 접기/펼치기 */
+    .golladamgi-header {
         display: flex;
         align-items: center;
-        gap: 6px;
+        justify-content: space-between;
+        padding: 14px 16px;
+        background: #fafafa;
+        border-bottom: 1px solid #e5e5e5;
+        cursor: pointer;
+        user-select: none;
+    }
+    .golladamgi-header .header-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #333;
+    }
+    .golladamgi-header .header-arrow {
+        font-size: 12px;
+        color: #999;
     }
 
-    .golladamgi-label em {
-        font-style: normal;
-        font-size: 11px;
-        color: #ff5a2d;
-        background: #fff3f0;
-        border: 1px solid #ffcbbf;
-        border-radius: 3px;
-        padding: 1px 6px;
-        font-weight: 600;
-    }
-
-    /*
-     * [구현 - CSS ④] 카드 그리드 레이아웃
-     * - 기본(모바일): 2열
-     * - PC(768px 이상): 4열
-     */
-    .golladamgi-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+    /* [구현 - CSS ④] 옵션 리스트 컨테이너 */
+    .golladamgi-list {
+        background: #fff;
     }
 
     /*
-     * [구현 - CSS ⑤] 개별 옵션 카드
+     * [구현 - CSS ⑤] 옵션 행 (라디오 리스트 스타일)
      * - button 태그 사용: 터치 영역 확보 및 접근성 대응
+     * - 한끼통살 참고 사이트와 동일한 행 구조
      */
     .golladamgi-card {
-        position: relative;
-        border: 1.5px solid #ddd;
-        border-radius: 10px;
-        padding: 14px 12px;
-        cursor: pointer;
-        background: #fff;
-        transition: border-color 0.15s, background 0.15s;
-        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 14px;
         width: 100%;
+        padding: 16px;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fff;
+        cursor: pointer;
+        text-align: left;
         box-sizing: border-box;
         outline: none;
+        transition: background 0.15s;
     }
 
+    /* [구현 - CSS ⑥] 행 hover 효과 - 마우스 올리면 배경색 변경 */
     .golladamgi-card:hover {
-        border-color: #ff5a2d;
-        background: #fffaf9;
+        background: #fff8f5;
     }
 
-    /*
-     * [구현 - CSS ⑥] 선택된 카드 상태
-     */
+    /* [구현 - CSS ⑦] 선택된 행 상태 */
     .golladamgi-card.is-selected {
-        border-color: #ff5a2d;
-        background: #fff8f6;
-        box-shadow: 0 0 0 1px #ff5a2d;
+        background: #fff3ee;
     }
 
-    /*
-     * [구현 - CSS ⑦] 선택 체크 마크 (✓)
-     */
-    .golladamgi-card .card-check {
-        display: none;
-        position: absolute;
-        top: 8px;
-        right: 8px;
+    /* 마지막 행 하단 테두리 제거 */
+    .golladamgi-card:last-child {
+        border-bottom: none;
+    }
+
+    /* [구현 - CSS ⑧] 라디오 서클 (커스텀) */
+    .card-radio {
+        flex-shrink: 0;
         width: 20px;
         height: 20px;
-        background: #ff5a2d;
+        border: 2px solid #ccc;
         border-radius: 50%;
-        color: #fff;
-        font-size: 11px;
-        line-height: 20px;
-        text-align: center;
+        position: relative;
+        background: #fff;
+        transition: border-color 0.15s;
+    }
+    .golladamgi-card:hover .card-radio {
+        border-color: #ff5a2d;
+    }
+    .golladamgi-card.is-selected .card-radio {
+        border-color: #ff5a2d;
+    }
+    .golladamgi-card.is-selected .card-radio::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ff5a2d;
     }
 
-    .golladamgi-card.is-selected .card-check {
-        display: block;
-    }
-
-    /*
-     * [구현 - CSS ⑧] 카드 내 뱃지
-     */
-    .card-badge {
-        display: inline-block;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 2px 6px;
-        border-radius: 3px;
-        margin-bottom: 6px;
-        letter-spacing: 0.2px;
-    }
-
-    .card-badge.best { background: #ff5a2d; color: #fff; }
-    .card-badge.max  { background: #222; color: #fff; }
-
-    /* [구현 - CSS ⑨] 카드 내 텍스트 요소들 */
+    /* [구현 - CSS ⑨] 수량명 (10개입 등) */
     .card-qty {
-        display: block;
+        flex-shrink: 0;
+        width: 60px;
         font-size: 14px;
         font-weight: 700;
         color: #222;
-        margin-bottom: 5px;
-    }
-
-    .card-origin {
         display: block;
-        font-size: 11px;
-        color: #aaa;
-        text-decoration: line-through;
-        margin-bottom: 3px;
     }
 
+    /* 이전 카드형에서 사용하던 요소 숨김 */
+    .card-check { display: none !important; }
+    .card-origin { display: none !important; }
+
+    /* [구현 - CSS ⑩] 가격 영역 */
     .card-price-row {
         display: flex;
         align-items: baseline;
-        gap: 4px;
-        margin-bottom: 3px;
-    }
-
-    .card-pct {
-        font-size: 13px;
-        font-weight: 800;
-        color: #ff5a2d;
+        flex-wrap: wrap;
+        gap: 5px;
+        flex: 1;
     }
 
     .card-price {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         color: #222;
     }
 
+    .card-pct {
+        font-size: 12px;
+        font-weight: 500;
+        color: #888;
+    }
+
+    /* [구현 - CSS ⑪] 뱃지 */
+    .card-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 3px;
+        letter-spacing: 0.2px;
+    }
+    .card-badge.best { background: #fff0ec; color: #ff5a2d; border: 1px solid #ffcbbf; }
+    .card-badge.max  { background: #fdeaea; color: #d9534f; border: 1px solid #f5c6c6; }
+
+    /* [구현 - CSS ⑫] 개당 가격 */
     .card-unit {
         display: block;
-        font-size: 11px;
+        font-size: 12px;
         color: #999;
         margin-top: 2px;
+        width: 100%;
     }
 
-    /* [구현 - CSS ⑩] 반응형 - PC 4열 */
-    @media (min-width: 768px) {
-        .golladamgi-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        .golladamgi-card { padding: 16px 14px; }
-        .card-qty { font-size: 15px; }
-        .card-price { font-size: 14px; }
-        .card-pct { font-size: 14px; }
+    /* [구현 - CSS ⑬] 모바일 대응 */
+    @media (max-width: 480px) {
+        .card-qty { width: 52px; font-size: 13px; }
+        .card-price { font-size: 13px; }
+        .golladamgi-card { padding: 13px 12px; gap: 10px; }
     }
-
-    /* [구현 - CSS ⑪] 반응형 - 극소형 화면 대응 */
     @media (max-width: 360px) {
-        .card-qty { font-size: 12px; }
-        .card-price { font-size: 11px; }
-        .card-pct { font-size: 11px; }
-        .golladamgi-card { padding: 10px 8px; }
+        .card-qty { width: 46px; font-size: 12px; }
+        .card-price { font-size: 12px; }
+        .card-badge { font-size: 10px; }
     }
 
     /* 선택 결과 & 가격 갱신 표시 */
@@ -395,6 +391,58 @@
         cursor: pointer;
     }
     .btn-buy:hover { background: #e84e24; }
+
+    /* [구현] 옵션 미선택 시 구매 버튼 호버 툴팁 */
+    .buy-buttons {
+        position: relative;
+    }
+
+    /* 툴팁 메시지 */
+    .option-tooltip {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px 16px;
+        border-radius: 8px;
+        white-space: nowrap;
+        z-index: 100;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: tooltipFadeIn 0.2s ease;
+    }
+
+    /* 툴팁 화살표 (아래 방향) */
+    .option-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: #333;
+    }
+
+    /* 툴팁 아이콘 */
+    .option-tooltip .tooltip-icon {
+        color: #ff5a2d;
+        margin-right: 4px;
+    }
+
+    /* 툴팁 표시 상태 */
+    .option-tooltip.show {
+        display: block;
+    }
+
+    /* 툴팁 등장 애니메이션 */
+    @keyframes tooltipFadeIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
 
     /* 모바일 반응형 */
     @media (max-width: 768px) {
@@ -458,66 +506,66 @@
                  [구현] 골라담기 커스텀 옵션 UI
                  =================================================================== -->
             <div class="golladamgi-wrap">
-                <p class="golladamgi-label">옵션 선택 <em>많을수록 저렴</em></p>
+                <!-- 헤더: "옵션 선택 (필수)" + 접기/펼치기 화살표 -->
+                <div class="golladamgi-header">
+                    <span class="header-title">옵션 선택 (필수)</span>
+                    <span class="header-arrow">▲</span>
+                </div>
 
-                <div class="golladamgi-grid" id="golladamgiGrid">
+                <div class="golladamgi-list" id="golladamgiGrid">
 
-                    <!-- 옵션 카드 1: 10개입 -->
+                    <!-- 옵션 행 1: 10개입 -->
                     <button type="button" class="golladamgi-card" data-option-value="1"
                             data-price="24700" data-origin="33000" data-pct="25" data-unit="2470" data-qty="10개입"
                             onclick="golladamgiSelect(this)">
-                        <span class="card-check">✓</span>
+                        <span class="card-radio"></span>
                         <span class="card-qty">10개입</span>
-                        <span class="card-origin">33,000원</span>
                         <div class="card-price-row">
-                            <span class="card-pct">25%</span>
                             <span class="card-price">24,700원</span>
+                            <span class="card-pct">(25% 할인)</span>
                         </div>
-                        <span class="card-unit">개당 2,470원</span>
+                        <span class="card-unit">1개 : 2,470원</span>
                     </button>
 
-                    <!-- 옵션 카드 2: 30개입 (베스트) -->
+                    <!-- 옵션 행 2: 30개입 (가장 많이 사요) -->
                     <button type="button" class="golladamgi-card" data-option-value="2"
                             data-price="70500" data-origin="99000" data-pct="29" data-unit="2350" data-qty="30개입"
                             onclick="golladamgiSelect(this)">
-                        <span class="card-check">✓</span>
-                        <span class="card-badge best">가장 많이 사요</span>
+                        <span class="card-radio"></span>
                         <span class="card-qty">30개입</span>
-                        <span class="card-origin">99,000원</span>
                         <div class="card-price-row">
-                            <span class="card-pct">29%</span>
                             <span class="card-price">70,500원</span>
+                            <span class="card-pct">(29% 할인)</span>
+                            <span class="card-badge best">가장 많이 사요</span>
                         </div>
-                        <span class="card-unit">개당 2,350원</span>
+                        <span class="card-unit">1개 : 2,350원</span>
                     </button>
 
-                    <!-- 옵션 카드 3: 50개입 -->
+                    <!-- 옵션 행 3: 50개입 -->
                     <button type="button" class="golladamgi-card" data-option-value="3"
                             data-price="111500" data-origin="165000" data-pct="32" data-unit="2230" data-qty="50개입"
                             onclick="golladamgiSelect(this)">
-                        <span class="card-check">✓</span>
+                        <span class="card-radio"></span>
                         <span class="card-qty">50개입</span>
-                        <span class="card-origin">165,000원</span>
                         <div class="card-price-row">
-                            <span class="card-pct">32%</span>
                             <span class="card-price">111,500원</span>
+                            <span class="card-pct">(32% 할인)</span>
                         </div>
-                        <span class="card-unit">개당 2,230원</span>
+                        <span class="card-unit">1개 : 2,230원</span>
                     </button>
 
-                    <!-- 옵션 카드 4: 100개입 (최대할인) -->
+                    <!-- 옵션 행 4: 100개입 (최대할인) -->
                     <button type="button" class="golladamgi-card" data-option-value="4"
                             data-price="196000" data-origin="330000" data-pct="41" data-unit="1960" data-qty="100개입"
                             onclick="golladamgiSelect(this)">
-                        <span class="card-check">✓</span>
-                        <span class="card-badge max">최대할인</span>
+                        <span class="card-radio"></span>
                         <span class="card-qty">100개입</span>
-                        <span class="card-origin">330,000원</span>
                         <div class="card-price-row">
-                            <span class="card-pct">41%</span>
                             <span class="card-price">196,000원</span>
+                            <span class="card-pct">(41% 할인)</span>
+                            <span class="card-badge max">최대할인</span>
                         </div>
-                        <span class="card-unit">개당 1,960원</span>
+                        <span class="card-unit">1개 : 1,960원</span>
                     </button>
 
                 </div>
@@ -546,6 +594,10 @@
                     <span class="total-price">총 <span id="totalPrice">0</span>원</span>
                 </div>
                 <div class="buy-buttons">
+                    <!-- [구현] 옵션 미선택 시 표시되는 툴팁 -->
+                    <div class="option-tooltip" id="optionTooltip">
+                        <span class="tooltip-icon">⚠</span> 옵션을 선택해 주세요
+                    </div>
                     <button class="btn-cart" id="btnCart" onclick="handleCart()">🛒 장바구니</button>
                     <button class="btn-buy" id="btnBuy" onclick="handleBuy()">바로 구매하기</button>
                 </div>
@@ -612,13 +664,33 @@ function golladamgiSelect(el) {
     console.log('[골라담기] 선택:', qty, '/ 가격:', price.toLocaleString() + '원', '/ mock select index:', optionValue);
 }
 
+/*
+ * [구현] 옵션 미선택 시 툴팁 표시 함수
+ * - 구매/장바구니 버튼 호버 시 옵션 미선택이면 툴팁 표시
+ * - 옵션 선택 완료 시 툴팁 숨김
+ */
+function showOptionTooltip() {
+    var tooltip = document.getElementById('optionTooltip');
+    if (tooltip) {
+        tooltip.classList.add('show');
+    }
+}
+
+function hideOptionTooltip() {
+    var tooltip = document.getElementById('optionTooltip');
+    if (tooltip) {
+        tooltip.classList.remove('show');
+    }
+}
+
 /* 장바구니 담기 */
 function handleCart() {
     var selected = document.querySelector('.golladamgi-card.is-selected');
     if (!selected) {
-        alert('옵션을 선택해주세요');
+        showOptionTooltip();  /* alert 대신 툴팁 표시 */
         return;
     }
+    hideOptionTooltip();
     var qty   = selected.getAttribute('data-qty');
     var price = parseInt(selected.getAttribute('data-price')).toLocaleString();
     alert('✅ 장바구니에 담겼습니다!\n\n' + qty + ' · ' + price + '원');
@@ -628,13 +700,47 @@ function handleCart() {
 function handleBuy() {
     var selected = document.querySelector('.golladamgi-card.is-selected');
     if (!selected) {
-        alert('옵션을 선택해주세요');
+        showOptionTooltip();  /* alert 대신 툴팁 표시 */
         return;
     }
+    hideOptionTooltip();
     var qty   = selected.getAttribute('data-qty');
     var price = parseInt(selected.getAttribute('data-price')).toLocaleString();
     alert('✅ 구매 페이지로 이동합니다!\n\n' + qty + ' · ' + price + '원');
 }
+
+/*
+ * [구현] 구매/장바구니 버튼 hover 이벤트
+ * - 마우스를 올렸을 때 옵션 미선택이면 툴팁 표시
+ * - 마우스를 떼면 툴팁 숨김
+ * - 옵션 선택 완료 상태면 툴팁 표시 안 함
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    var btnBuy  = document.getElementById('btnBuy');
+    var btnCart = document.getElementById('btnCart');
+
+    /* 바로 구매 버튼 hover */
+    if (btnBuy) {
+        btnBuy.addEventListener('mouseenter', function() {
+            var selected = document.querySelector('.golladamgi-card.is-selected');
+            if (!selected) showOptionTooltip();
+        });
+        btnBuy.addEventListener('mouseleave', function() {
+            hideOptionTooltip();
+        });
+    }
+
+    /* 장바구니 버튼 hover */
+    if (btnCart) {
+        btnCart.addEventListener('mouseenter', function() {
+            var selected = document.querySelector('.golladamgi-card.is-selected');
+            if (!selected) showOptionTooltip();
+        });
+        btnCart.addEventListener('mouseleave', function() {
+            hideOptionTooltip();
+        });
+    }
+});
 </script>
 
 </body>
